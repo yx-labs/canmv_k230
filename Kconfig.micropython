@@ -38,4 +38,11 @@ menu "CanMV Micropython Components Configurations"
         bool "Enable CV_Lite Module"
         default y
 
+    config ENABLE_MODULE_UAC1
+        bool "CanMV UAC1 host PCM adapter"
+        default n
+        help
+            Expose the RT-Smart UAC1 character devices to MicroPython.
+            Requires a kernel with the matching UAC1 PCM ABI.
+
 endmenu

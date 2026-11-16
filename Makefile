@@ -169,6 +169,10 @@ copy_sdcard: copy_examples
 	else \
 		echo "No sdcard resources found in $(SDK_CANMV_SRC_DIR)/resources/sdcard/"; \
 	fi
+ifeq ($(CONFIG_ENABLE_MODULE_UAC1),y)
+	@install -D -m 0644 "$(SDK_CANMV_SRC_DIR)/resources/examples/02-Media/usb_audio_uac1.py" \
+	    "${SDK_BUILD_IMAGES_DIR}/sdcard/examples/02-Media/usb_audio_uac1.py"
+endif
 
 endif
 

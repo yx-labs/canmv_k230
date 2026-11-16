@@ -54,6 +54,9 @@ CDEF = -DCANMV_VER="\"$(CANMV_VER)\"" -DCANMV_VER_FULL="\"$(CANMV_VER_FULL)\""
 INC += -I.
 INC += -I$(BUILD)
 INC += -I$(SDK_SRC_ROOT_DIR)/include
+ifeq ($(CONFIG_ENABLE_MODULE_UAC1),y)
+INC += -I$(SDK_RTSMART_SRC_DIR)/rtsmart/kernel/bsp/maix3/components/canmv_usb
+endif
 INC += -I$(BOARD_DIR)
 INC += -Iinclude
 INC += -Iinclude/ai_cube
@@ -197,6 +200,10 @@ CANMV_SRC_C += $(wildcard multi_media/*.c)
 CANMV_SRC_C += $(wildcard drivers/*.c)
 # modules
 CANMV_SRC_C += $(wildcard modules/*.c)
+
+ifeq ($(CONFIG_ENABLE_MODULE_UAC1),y)
+CANMV_SRC_C += uac1/moduac1.c uac1/pcm_filter.c
+endif
 
 ifeq ($(CONFIG_ENABLE_MODULE_CV_LITE),y)
 $(info Enable CV_Lite)
