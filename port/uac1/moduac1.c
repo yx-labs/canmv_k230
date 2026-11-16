@@ -117,12 +117,15 @@ static mp_obj_t transfer(mp_obj_t self, mp_obj_t data, bool capture)
     mp_buffer_info_t buf;
     mp_get_buffer_raise(data, &buf, capture ? MP_BUFFER_WRITE : MP_BUFFER_READ);
     if (buf.len % (2 * p->channels)) mp_raise_ValueError(MP_ERROR_TEXT("unaligned native PCM"));
-    ssize_t n = capture ? read(p->fd, buf.buf, buf.len) : write(p->fd, buf.buf, buf.len);
+    /* One native request per call. Larger buffers get a normal short count:
+     * RT-Smart's LWP bridge stages at most 64 KiB before the next copy. */
+    size_t count = buf.len < 65536 ? buf.len : 65536;
+    ssize_t n = capture ? read(p->fd, buf.buf, count) : write(p->fd, buf.buf, count);
     if (n < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) return MP_OBJ_NEW_SMALL_INT(0);
         raise_errno();
     }
-    if ((size_t)n > buf.len || n % (2 * p->channels)) mp_raise_OSError(EPROTO);
+    if ((size_t)n > count || n % (2 * p->channels)) mp_raise_OSError(EPROTO);
     return mp_obj_new_int(n);
 }
 
